@@ -9,7 +9,7 @@ const game = new Game(canvas);
 
 // Here we list all our scenes and our initial scene
 const scenes = {
-  gameScene: gameScene
+  "gameScene": gameScene
 };
 const initialScene = "gameScene";
 

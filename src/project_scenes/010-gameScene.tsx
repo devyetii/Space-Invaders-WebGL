@@ -44,7 +44,7 @@ export default class  gameScene extends Scene {
             ["texture.frag"]:{url:'shaders/texture.frag', type:'text'},
             ["house-model"]:{url:'models/House/House.obj', type:'text'},
             ["house-texture"]:{url:'models/House/House.jpeg', type:'image'},
-            ["moon-texture"]:{url:'images/moon.jpg', type:'image'},
+            ["moon-texture"]:{url:'images/space.jpg', type:'image'},
             ["spaceship-texture"]:{url:'models/spaceships/Textures/sh3.jpg', type:'image'},
             ["suzanne"]:{url:'models/Suzanne/Suzanne.obj', type:'text'},
             ["spaceship"]:{url:'models/spaceships/Sample_Ship.obj', type:'text'},
@@ -182,9 +182,9 @@ export default class  gameScene extends Scene {
         this.controller.movementSensitivity = 0.01;
         this.controller.fastMovementSensitivity = 0.05;
 
-        this.gl.enable(this.gl.CULL_FACE);
+       /* this.gl.enable(this.gl.CULL_FACE);
         this.gl.cullFace(this.gl.BACK);
-        this.gl.frontFace(this.gl.CCW);
+        this.gl.frontFace(this.gl.CCW);*/
 
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.depthFunc(this.gl.LEQUAL);
@@ -280,7 +280,7 @@ export default class  gameScene extends Scene {
         mat4.translate(moonMat, moonMat, [0, 10, -15]);
         mat4.rotateZ(moonMat, moonMat, Math.PI/8);
         mat4.rotateY(moonMat, moonMat, performance.now()/1000);
-
+        mat4.scale(moonMat, moonMat,vec3.fromValues(10,10,10));
         program.setUniformMatrix4fv("MVP", false, moonMat);
         program.setUniform4f("tint", [1, 1, 1, 1]);
 
