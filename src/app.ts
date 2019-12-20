@@ -1,11 +1,5 @@
 // Here, we import the things we need from other script files 
 import Game from './common/game';
-import TextureScene from './scenes/01-Texture';
-import TexturedModelsScene from './scenes/02-TexturedModels';
-import TerrianScene from './scenes/03-Terrain';
-import CubemapScene from './scenes/04-Cubemaps';
-import BlendingScene from './scenes/05-Blending';
-import myTerrianScene from './scenes/06-myTerrain';
 import myGameScene from './scenes/myGameScene'
 
 // First thing we need is to get the canvas on which we draw our scenes
@@ -15,14 +9,8 @@ const canvas: HTMLCanvasElement = document.querySelector("#app");
 const game = new Game(canvas);
 
 // Here we list all our scenes and our initial scene
-const scenes = {
-    "Texture": TextureScene,
-    "Textured Models": TexturedModelsScene,
-    "Terrain": TerrianScene,
-    "Cubemap": CubemapScene,
-    "Blending": BlendingScene,
-    "myGameScene": myGameScene,
-    "myTerrian": myTerrianScene
+const scenes = {   
+    "myGameScene": myGameScene
 };
 const initialScene = "myGameScene";
 
