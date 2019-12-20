@@ -22,13 +22,12 @@ float fogAmount(float dist){
 }
 
 void main(){
-    float height = texture(terrain_texture_sampler, v_texcoord).r; // We sample the height again but this time for mixing between bottom and top textures
-    vec4 bottom_color = texture(bottom_texture_sampler, v_texcoord*tiling_factor); // We sample the top texture
-    vec4 top_color = texture(top_texture_sampler, v_texcoord*tiling_factor); // We sample the bottom texture
-    // Tiling is used to control how much the textures should repeat
+    float height = texture(terrain_texture_sampler, v_texcoord).r; 
+    vec4 bottom_color = texture(bottom_texture_sampler, v_texcoord*tiling_factor);
+    vec4 top_color = texture(top_texture_sampler, v_texcoord*tiling_factor);
     
-    color = mix(bottom_color, top_color, smoothstep(mixing_heights.x, mixing_heights.y, height)) * v_color * tint; // mix bottom and top color
+    color = mix(bottom_color, top_color, smoothstep(mixing_heights.x, mixing_heights.y, height)) * v_color * tint; // Send our interpolated color
 
-    color = mix(color, fog_color, fogAmount(length(v_view))); // Apply fog
+    color = mix(color, fog_color, fogAmount(length(v_view)));
 
 }

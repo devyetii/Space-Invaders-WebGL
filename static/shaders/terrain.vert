@@ -11,13 +11,13 @@ uniform mat4 M;
 uniform mat4 VP;
 uniform vec3 cam_position;
 
-uniform sampler2D terrain_texture_sampler; // Note that vertex shaders can read textures too
+uniform sampler2D terrain_texture_sampler;
 
 void main(){
-    float height = texture(terrain_texture_sampler, texcoord).r; // We sample the height from the texture
-    vec4 world = M * vec4(position + vec3(0, height, 0), 1.0f); // then use it to move the vertices upwards
+    float height = texture(terrain_texture_sampler, texcoord).r;
+    vec4 world = M * vec4(position + vec3(0, height, 0), 1.0f);
     gl_Position = VP * world; 
     v_color = color;
     v_texcoord = texcoord;
-    v_view = world.xyz - cam_position; // This will be used for fog
+    v_view = world.xyz - cam_position;
 }

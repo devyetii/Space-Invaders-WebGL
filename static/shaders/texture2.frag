@@ -13,7 +13,11 @@ uniform vec4 tint;
 uniform sampler2D texture_sampler;
 
 void main(){
-   color = vec4(vec3(texture(texture_sampler, v_texcoord)),1.0) ; // Send our interpolated color
-   // FragColor = vec4(vec3(1.0 - texture(screenTexture, TexCoords)), 1.0);
+    
+
+   color = vec4(vec3(1.0 - texture(texture_sampler, v_texcoord)),1.0) ; // Send our interpolated color
+   
+
+
 
 }

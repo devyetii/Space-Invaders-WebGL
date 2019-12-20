@@ -33,10 +33,10 @@ export function Plane(gl: WebGL2RenderingContext, texCoords: {min:[number, numbe
         ...WHITE, ...WHITE, ...WHITE, ...WHITE
     ]), gl.STATIC_DRAW);
     mesh.setBufferData("texcoords", new Float32Array([
-        texCoords.min[0], texCoords.min[1],
-        texCoords.max[0], texCoords.min[1],
+        texCoords.min[0], texCoords.max[1],
         texCoords.max[0], texCoords.max[1],
-        texCoords.min[0], texCoords.max[1]
+        texCoords.max[0], texCoords.min[1],
+        texCoords.min[0], texCoords.min[1]
     ]), gl.STATIC_DRAW);
     mesh.setBufferData("normals", new Float32Array([
         0, 1, 0,
@@ -62,7 +62,7 @@ export function SubdividedPlane(gl: WebGL2RenderingContext, resolution: number |
             colors.push(...WHITE);
             texcoords.push(
                 i/resolution[0] * (texCoords.max[0] - texCoords.min[0]) + texCoords.min[0],  
-                j/resolution[1] * (texCoords.max[1] - texCoords.min[1]) + texCoords.min[1]);
+                (1 - j/resolution[1]) * (texCoords.max[1] - texCoords.min[1]) + texCoords.min[1]);
             normals.push(0, 1, 0);
         }
     }
@@ -132,35 +132,35 @@ export function Cube(gl: WebGL2RenderingContext): Mesh {
     ]), gl.STATIC_DRAW);
     mesh.setBufferData("texcoords", new Float32Array([
         //Upper Face
-        0, 1,
         0, 0,
-        1, 0,
+        0, 1,
         1, 1,
+        1, 0,
         //Lower Face
-        0, 0,
-        1, 0,
-        1, 1,
         0, 1,
+        1, 1,
+        1, 0,
+        0, 0,
         //Right Face
-        1, 0,
         1, 1,
-        0, 1,
+        1, 0,
         0, 0,
+        0, 1,
         //Left Face
-        0, 0,
-        1, 0,
-        1, 1,
         0, 1,
+        1, 1,
+        1, 0,
+        0, 0,
         //Front Face
+        0, 1,
+        1, 1,
+        1, 0,
         0, 0,
-        1, 0,
-        1, 1,
-        0, 1,
         //Back Face
-        1, 0,
         1, 1,
-        0, 1,
-        0, 0
+        1, 0,
+        0, 0,
+        0, 1
     ]), gl.STATIC_DRAW);
     mesh.setBufferData("normals", new Float32Array([
         //Upper Face
@@ -224,7 +224,7 @@ export function Sphere(gl: WebGL2RenderingContext, resolution: number | [number,
             const x = cos_theta * cos_phi, y = sin_phi, z = - sin_theta * cos_phi;    
             positions.push(x, y, z);
             colors.push(...WHITE);
-            texcoords.push(i/resolution[0], j/resolution[1]);
+            texcoords.push(i/resolution[0], 1 - j/resolution[1]);
             normals.push(x, y, z);
         }
     }
@@ -248,7 +248,7 @@ export function LoadOBJMesh(gl: WebGL2RenderingContext, data: string){
     let obj = new OBJ.Mesh(data);
     let mesh = createEmptyMesh(gl);
     mesh.setBufferData("positions", new Float32Array(obj.vertices), gl.STATIC_DRAW);
-    mesh.setBufferData("texcoords", new Float32Array(obj.textures), gl.STATIC_DRAW);
+    mesh.setBufferData("texcoords", new Float32Array(obj.textures.map((v,i)=>i%2==0?v:-v)), gl.STATIC_DRAW);
     mesh.setBufferData("normals", new Float32Array(obj.vertexNormals), gl.STATIC_DRAW);
     let colors = new Uint8Array(obj.vertices.length * 4 / 3);
     colors.fill(255);

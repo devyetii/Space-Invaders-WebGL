@@ -7,10 +7,10 @@ in vec3 v_normal;
 
 out vec4 color;
 
-uniform samplerCube cube_texture_sampler; // samplerCube is the type of samplers that read from cubes
+uniform samplerCube cube_texture_sampler;
 uniform vec4 tint;
 
-uniform bool refraction; // if false, do reflection, if true, do refraction.
+uniform bool refraction;
 uniform float refractive_index;
 
 void main(){
@@ -20,6 +20,5 @@ void main(){
     } else {
         direction = reflect(v_view, normalize(v_normal));    
     }
-    // Note that cube samplers take a direction (vec3) not a texture coordinate (vec2)
     color = texture(cube_texture_sampler, direction) * v_color * tint;
 }

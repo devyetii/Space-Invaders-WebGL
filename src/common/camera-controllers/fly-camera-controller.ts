@@ -40,6 +40,8 @@ export default class FlyCameraController {
         }
 
         if(this.input.isButtonDown(0)){
+            
+            console.log(this.camera.position);
             const mouseDelta = this.input.MouseDelta;
             this.yaw += mouseDelta[0] * this.yawSensitivity;
             this.pitch += -mouseDelta[1] * this.pitchSensitivity;

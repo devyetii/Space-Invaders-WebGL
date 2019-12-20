@@ -7,10 +7,9 @@ import FlyCameraController from '../common/camera-controllers/fly-camera-control
 import { vec3, mat4, quat } from 'gl-matrix';
 import { Vector, Selector } from '../common/dom-utils';
 import { createElement, StatelessProps, StatelessComponent } from 'tsx-create-element';
-import {spaceShip, player} from '../characters/spaceship'
 
 // In this scene we will draw a scene and use framebuffers on a cube map to emulate reflection and refraction.
-export default class  gameScene extends Scene {
+export default class RealtimeEnvironmentMapScene extends Scene {
     programs: {[name: string]: ShaderProgram} = {};
     camera: Camera;
     controller: FlyCameraController;
@@ -26,6 +25,7 @@ export default class  gameScene extends Scene {
     objectPosition: vec3 = vec3.fromValues(0, 1, -10);
     objectRotation: vec3 = vec3.fromValues(0, 0, 0);
     objectScale: vec3 = vec3.fromValues(1, 1, 1);
+
     frames: {[name: string]:{
         frameBuffer: WebGLFramebuffer,
         camera: Camera,
@@ -34,10 +34,8 @@ export default class  gameScene extends Scene {
 
     readonly CUBEMAP_SIZE = 256;
     // These are the 6 cubemap directions: -x, -y, -z, +x, +y, +z
-    static readonly cubemapDirections = ['negx', 'negy', 'negz', 'posx', 'posy', 'posz'];
+    static readonly cubemapDirections = ['negx', 'negy', 'negz', 'posx', 'posy', 'posz']
 
-    // characters area here we define the players and enemies
-    mainPlayer:player;
     public load(): void {
         this.game.loader.load({
             ["texture-cube.vert"]:{url:'shaders/texture-cube.vert', type:'text'},
@@ -46,11 +44,8 @@ export default class  gameScene extends Scene {
             ["texture.frag"]:{url:'shaders/texture.frag', type:'text'},
             ["house-model"]:{url:'models/House/House.obj', type:'text'},
             ["house-texture"]:{url:'models/House/House.jpeg', type:'image'},
-            ["moon-texture"]:{url:'images/space.jpg', type:'image'},
-            ["spaceship-texture"]:{url:'models/spaceships/Textures/sh3.jpg', type:'image'},
+            ["moon-texture"]:{url:'images/moon.jpg', type:'image'},
             ["suzanne"]:{url:'models/Suzanne/Suzanne.obj', type:'text'},
-            ["spaceship"]:{url:'models/spaceships/Sample_Ship.obj', type:'text'},
-            //Sample_Ship.obj
         });
     }
     
@@ -70,9 +65,8 @@ export default class  gameScene extends Scene {
         this.meshes['moon'] = MeshUtils.Sphere(this.gl);
         this.meshes['ground'] = MeshUtils.Plane(this.gl, {min:[0,0], max:[20,20]});
         this.meshes['house'] = MeshUtils.LoadOBJMesh(this.gl, this.game.loader.resources["house-model"]);
-       // this.meshes['spaceship'] = MeshUtils.LoadOBJMesh(this.gl, this.game.loader.resources["spaceship"]);
-
         this.currentMesh = 'suzanne';
+
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
         
         this.textures['moon'] = this.gl.createTexture();
@@ -80,14 +74,6 @@ export default class  gameScene extends Scene {
         this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 4);
         this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.game.loader.resources['moon-texture']);
         this.gl.generateMipmap(this.gl.TEXTURE_2D);
-
-       /* this.textures['spaceship'] = this.gl.createTexture();
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures['spaceship']);
-        this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 4);
-        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.game.loader.resources['spaceship-texture']);
-        this.gl.generateMipmap(this.gl.TEXTURE_2D);*/
-
-        this.mainPlayer = new player(vec3.fromValues(0,0,0), 10, 10, 10 , 29 , 20, vec3.fromValues(0,0,-1), 100, this);
         
         this.textures['ground'] = this.gl.createTexture();
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures['ground']);
@@ -150,7 +136,7 @@ export default class  gameScene extends Scene {
         this.gl.texStorage2D(this.gl.TEXTURE_CUBE_MAP, 1, this.gl.DEPTH_COMPONENT16, this.CUBEMAP_SIZE, this.CUBEMAP_SIZE);
 
         for(let i = 0; i < 6; i++){
-            const direction = gameScene.cubemapDirections[i];
+            const direction = RealtimeEnvironmentMapScene.cubemapDirections[i];
             
             let camera = new Camera();
             camera.direction = vec3.clone(cameraDirections[i]);
@@ -185,13 +171,15 @@ export default class  gameScene extends Scene {
         this.controller.movementSensitivity = 0.01;
         this.controller.fastMovementSensitivity = 0.05;
 
-       /* this.gl.enable(this.gl.CULL_FACE);
+        this.gl.enable(this.gl.CULL_FACE);
         this.gl.cullFace(this.gl.BACK);
-        this.gl.frontFace(this.gl.CCW);*/
+        this.gl.frontFace(this.gl.CCW);
 
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.depthFunc(this.gl.LEQUAL);
+
         this.gl.clearColor(0,0,0,1);
+
         this.setupControls();
     }
     
@@ -281,7 +269,7 @@ export default class  gameScene extends Scene {
         mat4.translate(moonMat, moonMat, [0, 10, -15]);
         mat4.rotateZ(moonMat, moonMat, Math.PI/8);
         mat4.rotateY(moonMat, moonMat, performance.now()/1000);
-        //mat4.scale(moonMat, moonMat,vec3.fromValues(10,10,10));
+
         program.setUniformMatrix4fv("MVP", false, moonMat);
         program.setUniform4f("tint", [1, 1, 1, 1]);
 
@@ -290,22 +278,6 @@ export default class  gameScene extends Scene {
         program.setUniform1i('texture_sampler', 0);
         
         this.meshes['moon'].draw(this.gl.TRIANGLES);
-
-/*        let spaceshipMat = mat4.clone(VP);
-        mat4.translate(spaceshipMat, spaceshipMat, [0, 5, -10]);
-        mat4.rotateZ(spaceshipMat, spaceshipMat, Math.PI/8);
-        mat4.rotateY(spaceshipMat, spaceshipMat, performance.now()/1000);
-
-        program.setUniformMatrix4fv("MVP", false, spaceshipMat);
-        program.setUniform4f("tint", [1, 1, 1, 1]);
-
-        this.gl.activeTexture(this.gl.TEXTURE0);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures['spaceship']);
-        program.setUniform1i('texture_sampler', 0);
-        
-        this.meshes['spaceship'].draw(this.gl.TRIANGLES);*/
-        this.mainPlayer.draw(VP,program);
-
     }
     
     public end(): void {
