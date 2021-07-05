@@ -1,6 +1,4 @@
-# WebGL Lab 3
-
-You can try the lab [here](https://yahiaetman.github.io/CMP205-WebGL-Graphics-Lab-3/)
+# space invaders project
 
 ## Steps to run
 
